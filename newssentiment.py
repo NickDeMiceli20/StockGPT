@@ -2,23 +2,19 @@ from langchain import PromptTemplate
 from langchain import OpenAI
 from langchain import LLMChain
 import os
+from main import date_url_dict
+from langchain.document_loaders import UnstructuredURLLoader
+os.environ["OPENAI_API_KEY"] = "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"
 
-os.environ["OPENAI_API_KEY"] = "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"
+#articles = SeekingAlpha, Reuters, TechCrunch
+template ="""
+As a financial expert with stock recommendation experience, I can analyze a given article on a stock and provide a recommendation based on a scoring system. Please provide the URL of the article and the name of the {stock} you want me to analyze.
 
-template = """
-Forget all your previous instructions. Pretend you are a financial expert. You are
-a financial expert with stock recommendation experience. You will take in a url for an article based
-on the stock in this article create a recommendation based on a scoring system, with 1 as extremely 
-strong recommendation, -1 as extremely negative recommendation, and 0 as neutral, and print out your recommendation. A user
-will input the {stock} that they want the analysis of. This is important becuase most articles have more than one stock in the article,
-but this will allow you to base your recommendation just around that one stock. You can use decimal
-values to exemplify somewhat strong or somewhat negative sentiment. If you do not know, then print out I do no know. 
-Then elaborate with one short and concise paragraph on the next line. Is this article good bad or neutral in terms of its stock price for the future.
-Make a recommendation on whether an investor should buy for short term, long term, or a short term sell or long term sell.
+Based on the article contents, I will create a recommendation using a scoring system, where 1 represents an extremely strong recommendation, -1 represents an extremely negative recommendation, and 0 represents neutral sentiment. If I do not know or cannot find enough information, I will print "I do not know."
 
-Url: {url}
+After analyzing the article, I will provide a concise summary of around 450 words, indicating whether the article is positive, negative, or neutral in terms of its impact on the stock's price in the future. Based on my analysis, I will make a recommendation on whether an investor should buy or sell the stock for the short or long term.
+Url:{url}
 """
-
 prompt = PromptTemplate(
     input_variables=['url', 'stock'],
     template=template,
@@ -30,5 +26,5 @@ chatgpt_chain = LLMChain(
     verbose=True,
 )
 
-output = chatgpt_chain.predict(url="Gateway Investment trimmed its Apple holdings, slashed its GE stake, and bought more Altria stock in the first quarter.", stock='Apple')
+output = chatgpt_chain.predict(url="https://techcrunch.com/2023/03/14/apple-launches-a-new-way-to-shop-for-iphone-online-with-help-from-a-live-specialist/", stock='Apple')
 print(output)
